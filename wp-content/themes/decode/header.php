@@ -50,21 +50,23 @@
 	
 	<?php tha_header_before(); ?>
 	<?php if ( get_theme_mod( 'constant_sidebar', 'closing' ) == 'constant' && get_theme_mod( 'show_sidebar', true ) == true ) { echo '<div class="site-scroll">'; } ?>
-	<header id="masthead" class="site-header" role="banner">
+	<header id="masthead" class="site-header" role="banner" style="background: #141010 url(http://res.cloudinary.com/hpuomxzff/image/upload/c_crop,e_grayscale,g_north,h_220,w_640,x_0,y_60/v1413252533/header_smopk4.png) center no-repeat;">
 		<?php tha_header_top(); ?>
 		
-		<div class="site-branding">
-			
+		<div class="site-branding" style="color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
+			<!--
 			<?php function decode_create_header_image() {
 				if ( get_header_image() != '' ) : ?>
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
-						<img class="site-logo" src="<?php header_image(); ?>" height="<?php echo esc_attr( get_custom_header()->height ); ?>" width="<?php echo esc_attr( get_custom_header()->width ); ?>" alt="">
+						<img class="site-logo" src="https://i.imgur.com/0IwBtLL.jpg" height="<?php echo esc_attr( get_custom_header()->height ); ?>" width="<?php echo esc_attr( get_custom_header()->width ); ?>" alt="https://i.imgur.com/0IwBtLL.jpg">
 					</a>
 				<?php endif;
 			}
 			add_action( 'decode_header_image', 'decode_create_header_image' ); ?>
 			<?php decode_header_image(); ?>
-				
+			-->
+
+
 			<?php if ( get_theme_mod( 'show_site_title', true ) == true ) : ?>			
 				<h1 class="site-title">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
@@ -73,13 +75,12 @@
 			
 			<?php if ( get_theme_mod( 'show_site_description', true ) == true ) : ?>
 				<?php if ( get_theme_mod( 'html_description', '' ) !== '' ) : ?>
-				<h2 class="site-description"><?php echo get_theme_mod( 'html_description' ); ?></h2>
+				<h2 style="font-size: 1.4em" class="site-description"><?php echo get_theme_mod( 'html_description' ); ?></h2>
 				<?php elseif ( get_theme_mod( 'html_description', '' ) == '' ) : ?>
-				<h2 class="site-description"><?php echo get_bloginfo( 'description' );?></h2>
+				<h2 style="font-size:1.4em" class="site-description"><?php echo get_bloginfo( 'description' );?></h2>
 				<?php endif; ?>
 			<?php endif; ?>
 			
-		</div>
 		
 		<?php if ( get_theme_mod( 'show_header_social_icons', false ) == true ) {
 			get_template_part( 'social-links' );
@@ -94,9 +95,11 @@
 				'items_wrap'     => '<nav id="%1$s" class="%2$s" role="navigation"><ul>%3$s</ul></nav><!-- #header-menu -->',
 			) );
 		endif; ?>
-		
+			
+		</div>
+
 		<?php tha_header_bottom(); ?>
-		
+
 	</header><!-- #masthead -->
 	
 		<?php tha_header_after(); ?>
