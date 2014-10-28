@@ -4,7 +4,7 @@ Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 8.1
+Stable tag: 8.1.1
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -201,12 +201,21 @@ If you are staying on WP Statistics 7.4 WordPress will, through the Dashboard an
 10. View latest search engine referrers Statistics page.
 
 == Upgrade Notice ==
+= 8.1.1 =
+* If you have enabled browscap.ini, please go to Statistics->Settings->browscap and download the browscap.ini file manually.
+
 = 8.0 =
 * PHP 5.3 is now required for WP Statistics!  DO NOT UPGRADE TO 8.0 IF YOU ARE RUNNING AN OLDER VERSION!
 * BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure of the database.
 * Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.1.1 =
+* Fixed: Bug in browscap.ini update code that could mis-identify all hits as robots.
+* Fixed: Bug in the scheduled reports code that failed to process the report content correctly.
+* Fixed: Bug in schedule reports that failed to select the current schedule in the drop down.
+* Removed: Depricated variables from the report content description.
+
 = 8.1 =
 * Added: Detected browser information to the optimization page.
 * Updated: Re-organized new browscap code to avoid PHP 5.2 or below throwing a parse error.
