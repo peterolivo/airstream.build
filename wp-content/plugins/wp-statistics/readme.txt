@@ -4,7 +4,7 @@ Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 8.1.1
+Stable tag: 8.2
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -47,12 +47,15 @@ This product includes GeoLite2 data created by MaxMind, available from http://ww
 
 = Support =
 We're sorry you're having problem with WP Statistics and we're happy to help out.  Here are a few things to do before contacting us:
+
 * Have you read the [FAQs](http://wordpress.org/plugins/wp-statistics/faq/)?
 * Have you read the [manual](http://plugins.svn.wordpress.org/wp-statistics/trunk/manual/WP%20Statistics%20Admin%20Manual.html)?
 * Have you search the [support forum](http://wordpress.org/support/plugin/wp-statistics) for a similar issue?
 * Have you search the Internet for any error messages you are receiving?
+* Make sure you have access to your PHP error logs.
 
 And a few things to double-check:
+
 * How's your memory_limit in php.ini?
 * Have you tried disabling any other plugins you may have installed?
 * Have you tried using the default WordPress theme?
@@ -75,7 +78,7 @@ Still not having any luck?  Open a new thread on one of the support forums and w
 * Spanish Thanks Jose
 * Arabic [Thanks Hammad Shammari](http://www.facebook.com/aboHatim)
 * Turkish [Thanks aidinMC](http://www.artadl.ir/) & [Manset27.com](http://www.manset27.com/) & [Abdullah Manaz](http://www.manaz.net/)
-* Italian [Thanks Tony Bellardi](http://www.tonybellardi.com/)
+* Italian [Thanks Tony Bellardi](http://www.tonybellardi.com/) & Andrea Beducci
 * German [Thanks Andreas Martin](http://www.andreasmartin.com/) and Mike
 * Russian [Thanks Oleg](http://www.bestplugins.ru/)
 * Bengali [Thanks Mehdi Akram](http://www.shamokaldarpon.com/)
@@ -188,6 +191,10 @@ If you are staying on WP Statistics 7.4 WordPress will, through the Dashboard an
 
 (Disable Updates Manager)[https://wordpress.org/plugins/stops-core-theme-and-plugin-updates/] is one I found doing a quick search and lets you disable individual plugins from the update process.
 
+= Something has gone horribly wrong and my site no longer loads, how can I disable the plugin without access to the admin area? =
+
+You can manually disable plugins in WordPress by simply renaming the folder they are installed in.  Using FTP or your hosting providers file manager, go to your WordPress directory, from ther go to wp-content/plugins and rename or delete the wp-statistics folder.
+
 == Screenshots ==
 1. View stats page.
 2. View latest search words.
@@ -210,6 +217,13 @@ If you are staying on WP Statistics 7.4 WordPress will, through the Dashboard an
 * Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.2 =
+* Added: Support for historical data.
+* Added: Removal option.
+* Updated: Optimized SQL statements to hopefully get rid of duplicate key error/warnings.
+* Updated: Persian, Polish, Italian translations.
+* Fixed: Duplicate date display on charts due to DST time change.
+
 = 8.1.1 =
 * Fixed: Bug in browscap.ini update code that could mis-identify all hits as robots.
 * Fixed: Bug in the scheduled reports code that failed to process the report content correctly.
