@@ -3,7 +3,7 @@
 Plugin Name: WP Statistics
 Plugin URI: http://wp-statistics.com/
 Description: Complete statistics for your WordPress site.
-Version: 8.3
+Version: 8.4
 Author: Mostafa Soufi & Greg Ross
 Author URI: http://wp-statistics.com/
 Text Domain: wp_statistics
@@ -17,7 +17,7 @@ License: GPL2
 	}
 	
 	// These defines are used later for various reasons.
-	define('WP_STATISTICS_VERSION', '8.3');
+	define('WP_STATISTICS_VERSION', '8.4');
 	define('WP_STATISTICS_MANUAL', 'manual/WP Statistics Admin Manual.');
 	define('WP_STATISTICS_REQUIRED_PHP_VERSION', '5.3.0');
 	define('WP_STATISTICS_REQUIRED_GEOIP_PHP_VERSION', WP_STATISTICS_REQUIRED_PHP_VERSION);
@@ -66,7 +66,7 @@ License: GPL2
 		include_once( dirname( __FILE__ ) . '/wps-install.php' );
 	}
 
-	// Load the update fuctions for GeoIP and browscap.ini (done in a seperate file to avoid a parse error in PHP 5.2 or below)
+	// Load the update functions for GeoIP and browscap.ini (done in a separate file to avoid a parse error in PHP 5.2 or below)
 	include_once dirname( __FILE__ ) . '/wps-updates.php';
 	
 	// Load the rest of the required files for our global functions, online user tracking and hit tracking.
@@ -132,7 +132,7 @@ License: GPL2
 	
 		// Call the online users tracking code.
 		if( $WP_Statistics->get_option('useronline') )
-			$o->Check_online();
+			$o->Check_online($h->GetLocation());
 
 		// Call the visit tracking code.
 		if( $WP_Statistics->get_option('visits') )
@@ -266,13 +266,14 @@ License: GPL2
 		if( $WP_Statistics->get_option('geoip') ) {
 			add_submenu_page(__FILE__, __('Countries', 'wp_statistics'), __('Countries', 'wp_statistics'), $read_cap, 'wps_countries_menu', 'wp_statistics_log_countries');
 		}
-		add_submenu_page(__FILE__, __('Hits', 'wp_statistics'), __('Hits', 'wp_statistics'), $read_cap, 'wps_hits_menu', 'wp_statistics_log_hits');
 		add_submenu_page(__FILE__, __('Exclusions', 'wp_statistics'), __('Exclusions', 'wp_statistics'), $read_cap, 'wps_exclusions_menu', 'wp_statistics_log_exclusions');
+		add_submenu_page(__FILE__, __('Hits', 'wp_statistics'), __('Hits', 'wp_statistics'), $read_cap, 'wps_hits_menu', 'wp_statistics_log_hits');
+		add_submenu_page(__FILE__, __('Online', 'wp_statistics'), __('Online', 'wp_statistics'), $read_cap, 'wps_online_menu', 'wp_statistics_log_online');
+		add_submenu_page(__FILE__, __('Pages', 'wp_statistics'), __('Pages', 'wp_statistics'), $read_cap, 'wps_pages_menu', 'wp_statistics_log_pages');
 		add_submenu_page(__FILE__, __('Referers', 'wp_statistics'), __('Referers', 'wp_statistics'), $read_cap, 'wps_referers_menu', 'wp_statistics_log_referers');
 		add_submenu_page(__FILE__, __('Searches', 'wp_statistics'), __('Searches', 'wp_statistics'), $read_cap, 'wps_searches_menu', 'wp_statistics_log_searches');
 		add_submenu_page(__FILE__, __('Search Words', 'wp_statistics'), __('Search Words', 'wp_statistics'), $read_cap, 'wps_words_menu', 'wp_statistics_log_words');
 		add_submenu_page(__FILE__, __('Visitors', 'wp_statistics'), __('Visitors', 'wp_statistics'), $read_cap, 'wps_visitors_menu', 'wp_statistics_log_visitors');
-		add_submenu_page(__FILE__, __('Pages', 'wp_statistics'), __('Pages', 'wp_statistics'), $read_cap, 'wps_pages_menu', 'wp_statistics_log_pages');
 		add_submenu_page(__FILE__, '', '', $read_cap, 'wps_break_menu', 'wp_statistics_log_overview');
 		add_submenu_page(__FILE__, __('Optimization', 'wp_statistics'), __('Optimization', 'wp_statistics'), $manage_cap, 'wp-statistics/optimization', 'wp_statistics_optimization');
 		add_submenu_page(__FILE__, __('Settings', 'wp_statistics'), __('Settings', 'wp_statistics'), $read_cap, 'wp-statistics/settings', 'wp_statistics_settings');
@@ -323,7 +324,8 @@ License: GPL2
 			$wp_admin_bar->add_menu( array(
 				'id'		=> 	'wp-statistics-menu-useronline',
 				'parent'	=>	'wp-statistic-menu',
-				'title'		=>	__('User Online', 'wp_statistics') . ": " . wp_statistics_useronline()
+				'title'		=>	__('User Online', 'wp_statistics') . ": " . wp_statistics_useronline(),
+				'href'		=>  $AdminURL . 'admin.php?page=wps_online_menu'
 			));
 			
 			$wp_admin_bar->add_menu( array(
@@ -443,6 +445,11 @@ License: GPL2
 		wp_statistics_log('exclusions');
 	}
 	
+	function wp_statistics_log_online() {
+
+		wp_statistics_log('online');
+	}
+	
 	// This is the main statistics display function/
 	function wp_statistics_log( $log_type = "" ) {
 		GLOBAL $wpdb, $table_prefix, $WP_Statistics;
@@ -530,6 +537,11 @@ License: GPL2
 		} else if( $log_type == 'exclusions' ) {
 
 			include_once dirname( __FILE__ ) . '/includes/log/exclusions.php';
+			
+		} else if( $log_type == 'online' ) {
+
+			include_once dirname( __FILE__ ) . '/includes/log/online.php';
+			
 			
 		} else if( $log_type == 'top-pages' ) {
 

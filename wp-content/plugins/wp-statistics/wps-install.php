@@ -8,12 +8,14 @@
 		$create_useronline_table = ("CREATE TABLE {$wp_prefix}statistics_useronline (
 			ID int(11) NOT NULL AUTO_INCREMENT,
 			ip varchar(60) NOT NULL,
+			created int(11),
 			timestamp int(10) NOT NULL,
 			date datetime NOT NULL,
 			referred text CHARACTER SET utf8 NOT NULL,
 			agent varchar(255) NOT NULL,
 			platform varchar(255),
 			version varchar(255),
+			location varchar(10),
 			PRIMARY KEY  (ID)
 		) CHARSET=utf8");
 		
@@ -192,6 +194,7 @@
 		if( $WP_Statistics->get_option('robotlist') === FALSE ) { $WP_Statistics->store_option('robotlist',$wps_robotslist); }
 		if( $WP_Statistics->get_option('exclude_administrator') === FALSE ) { $WP_Statistics->store_option('exclude_administrator',TRUE); }
 		if( $WP_Statistics->get_option('disable_se_clearch') === FALSE ) { $WP_Statistics->store_option('disable_se_clearch',TRUE); }
+		if( $WP_Statistics->get_option('map_type') === FALSE ) { $WP_Statistics->store_option('map_type','jqvmap'); }
 
 		if( $WPS_Installed == false ) {		
 			// We now need to set the robot list to update during the next release.  This is only done for new installs to ensure we don't overwrite existing custom robot lists.

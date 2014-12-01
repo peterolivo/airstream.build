@@ -242,6 +242,7 @@
 		$result = $wpdb->get_results( "SELECT DISTINCT uri FROM {$table_prefix}statistics_pages", ARRAY_N );
 
 		$total = 0;
+		$uris = array();
 		
 		// Now get the total page visit count for each unique URI.
 		foreach( $result as $out ) {
@@ -265,13 +266,11 @@
 			$uris[] = array( $out[0], wp_statistics_pages( 'total', $out[0] ), $id, $title );
 		}
 
-		// If we have some results, let's sort them using usort.  If not, make sure we return an array.
-		if( count( $uris ) > 0 ) {
+		// If we have more than one result, let's sort them using usort.
+		if( count( $uris ) > 1 ) {
 			// Sort the URI's based on their hit count.
 			usort( $uris, 'wp_stats_compare_uri_hits');
-		} else {
-			$uris = array();
-		}
+		} 
 		
 		return array( $total, $uris );
 	}
@@ -745,7 +744,7 @@
 			$protocol = "http";
 	
 			if( array_key_exists( 'HTTPS', $_SERVER ) ) {
-				if( $_SERVER['HTTPS'] == 'on' ) { $protocol += 's'; }
+				if( $_SERVER['HTTPS'] == 'on' ) { $protocol .= 's'; }
 			}
 	
 			// This is google's API URL we'll be calling.

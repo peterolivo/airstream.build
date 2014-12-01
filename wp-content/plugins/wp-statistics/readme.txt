@@ -4,7 +4,7 @@ Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 8.3
+Stable tag: 8.4
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -208,15 +208,33 @@ You can manually disable plugins in WordPress by simply renaming the folder they
 10. View latest search engine referrers Statistics page.
 
 == Upgrade Notice ==
-= 8.1.1 =
-* If you have enabled browscap.ini, please go to Statistics->Settings->browscap and download the browscap.ini file manually.
+= 8.3.1 =
+This is a security update release, please update as soon as possible.
 
 = 8.0 =
-* PHP 5.3 is now required for WP Statistics!  DO NOT UPGRADE TO 8.0 IF YOU ARE RUNNING AN OLDER VERSION!
-* BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure of the database.
-* Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
+PHP 5.3 is now required for WP Statistics!  DO NOT UPGRADE TO 8.0 IF YOU ARE RUNNING AN OLDER VERSION!
+BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure of the database.
+Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.4 =
+* Added: Dashboard widgets for all of the widgets on the overview page.
+* Added: Option to disable all dashboard widgets.
+* Added: Old dashboard widget upgraded with last 10 days of hits statistics.
+* Added: Online users page and time a user has been online.
+* Fixed: Fixed missing site_url on top 10 pages in the overview page.
+* Fixed: Incorrect url generated for Google map if dashboard was being forced in to https mode.
+* Fixed: Properly un-escape quotation marks in report body if magic quotes is enabled.
+* Fixed: URL referrer CSS style would 'push' other entires to the next line on small displays.
+* Fixed: Various PHP warnings on uninitalized variables, thanks bseddon
+* Updated: Polish translations.
+* Updated: Default map type now set to JQVMap.
+
+= 8.3.1 =
+* Updated: Various SQL code clean ups.
+* Updated: Varioud data validation clean ups.
+* Updated: Various data output encoding updates, thanks Marc.
+
 = 8.3 =
 * Added: Sanity checks for file size and results to browscap.ini updates, if the new cache file size is wrong or it mis-identifies a common real browser as a crawler the update will be rolled back.
 * Added: Option to e-mail a report on browscap.ini, database pruning, upgrades and GeoIP database updates.

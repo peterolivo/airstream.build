@@ -14,6 +14,17 @@
 				</h3>
 				<div class="inside">
 					<div class="inside">
+					<?php wp_statistics_generate_referring_postbox_content($result); ?>
+					</div>
+				</div>
+			</div>
+<?php
+		}
+	}
+	
+	function wp_statistics_generate_referring_postbox_content($result, $count = 10) {
+	
+?>
 						<table width="100%" class="widefat table-stats" id="last-referrer">
 							<tr>
 								<td width="10%"><?php _e('References', 'wp_statistics'); ?></td>
@@ -35,7 +46,7 @@
 								
 								$get_urls = array_count_values($urls);
 								arsort( $get_urls );
-								$get_urls = array_slice($get_urls, 0, 10);
+								$get_urls = array_slice($get_urls, 0, $count);
 								
 								foreach( $get_urls as $items => $value) {
 								
@@ -46,9 +57,5 @@
 								}
 							?>
 						</table>
-					</div>
-				</div>
-			</div>
-			<?php
-		}
-	}
+<?php
+	}	
