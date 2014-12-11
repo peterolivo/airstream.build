@@ -4,7 +4,7 @@ Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 8.4
+Stable tag: 8.5.1
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -208,6 +208,9 @@ You can manually disable plugins in WordPress by simply renaming the folder they
 10. View latest search engine referrers Statistics page.
 
 == Upgrade Notice ==
+= 8.5 =
+This is a security update release, please update as soon as possible.  In addition to the security fixes there are several new features, see the change log for details.
+
 = 8.3.1 =
 This is a security update release, please update as soon as possible.
 
@@ -217,6 +220,25 @@ BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure
 Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.5.1 =
+* Fixed: Typo in last search page causing fatal error in PHP.
+
+= 8.5 =
+* Added: try/catch condition around browscap call to avoid fatal errors stopping the script.
+* Added: Page trend widget to post/page editor.
+* Added: Aland Islands Flag icon.
+* Added: Option to record all online users regardless if they would otherwise be excluded.
+* Added: Option to disable the page editor widget.
+* Fixed: Various security fixes, thanks Ryan.
+* Fixed: Resolved warnings when natcasesort received a null list, thanks robertalks.
+* Fixed: Before updating the browscap.ini cache file, remove stale lock files.
+* Fixed: Avoid throwing a fatal error when the shutdown code is called if for some reason the global $WP_Statistics variable has been destroyed during a page load.
+* Updated: The online code now uses the same rules to exclude users as the hits code.
+* Updated: Minor code cleanups and data return checks.
+* Updated: German translations, thanks bios4.
+* Updated: Polish and Turkish translations.
+* Updated: Use built in WordPress function to translate user roles instead of custom strings in our PO file, thanks bios4.
+
 = 8.4 =
 * Added: Dashboard widgets for all of the widgets on the overview page.
 * Added: Option to disable all dashboard widgets.

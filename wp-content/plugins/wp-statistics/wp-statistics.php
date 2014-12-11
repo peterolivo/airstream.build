@@ -3,7 +3,7 @@
 Plugin Name: WP Statistics
 Plugin URI: http://wp-statistics.com/
 Description: Complete statistics for your WordPress site.
-Version: 8.4
+Version: 8.5.1
 Author: Mostafa Soufi & Greg Ross
 Author URI: http://wp-statistics.com/
 Text Domain: wp_statistics
@@ -17,7 +17,7 @@ License: GPL2
 	}
 	
 	// These defines are used later for various reasons.
-	define('WP_STATISTICS_VERSION', '8.4');
+	define('WP_STATISTICS_VERSION', '8.5.1');
 	define('WP_STATISTICS_MANUAL', 'manual/WP Statistics Admin Manual.');
 	define('WP_STATISTICS_REQUIRED_PHP_VERSION', '5.3.0');
 	define('WP_STATISTICS_REQUIRED_GEOIP_PHP_VERSION', WP_STATISTICS_REQUIRED_PHP_VERSION);
@@ -71,7 +71,6 @@ License: GPL2
 	
 	// Load the rest of the required files for our global functions, online user tracking and hit tracking.
 	include_once dirname( __FILE__ ) . '/includes/functions/functions.php';
-	include_once dirname( __FILE__ ) . '/includes/classes/useronline.class.php';
 	include_once dirname( __FILE__ ) . '/includes/classes/hits.class.php';
 
 	// If GeoIP is enabled and supported, extend the hits class to record the GeoIP information.
@@ -82,6 +81,7 @@ License: GPL2
 	// Finally load the widget, dashboard, shortcode and scheduled events.
 	include_once dirname( __FILE__ ) . '/widget.php';
 	include_once dirname( __FILE__ ) . '/dashboard.php';
+	include_once dirname( __FILE__ ) . '/editor.php';
 	include_once dirname( __FILE__ ) . '/shortcode.php';
 	include_once dirname( __FILE__ ) . '/schedule.php';
 	
@@ -119,9 +119,9 @@ License: GPL2
 	
 	function wp_statistics_shutdown_action() {
 		GLOBAL $WP_Statistics;
-		
-		// Create a new useronline class
-		$o = new Useronline();
+
+		// If something has gone horribly wrong and $WP_Statistics isn't an object, bail out.  This seems to happen sometimes with WP Cron calls.
+		if( !is_object( $WP_Statistics ) ) { return; }
 		
 		// Create a new hit class, if we're GeoIP enabled, use GeoIPHits().
 		if( class_exists( 'GeoIPHits' ) ) { 
@@ -132,7 +132,7 @@ License: GPL2
 	
 		// Call the online users tracking code.
 		if( $WP_Statistics->get_option('useronline') )
-			$o->Check_online($h->GetLocation());
+			$h->Check_online();
 
 		// Call the visit tracking code.
 		if( $WP_Statistics->get_option('visits') )
@@ -146,9 +146,6 @@ License: GPL2
 		if( $WP_Statistics->get_option('pages') )
 			$h->Pages();
 
-		if( $WP_Statistics->get_option('check_online') )
-			$o->second = $WP_Statistics->get_option('check_online');
-		
 		// Check to see if the GeoIP database needs to be downloaded and do so if required.
 		if( $WP_Statistics->get_option('update_geoip') )
 			wp_statistics_download_geoip();
