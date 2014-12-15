@@ -3,8 +3,8 @@ Contributors: mostafa.s1990, GregRoss
 Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
-Tested up to: 4.0
-Stable tag: 8.5.1
+Tested up to: 4.1
+Stable tag: 8.6.3
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -152,7 +152,7 @@ You can also ask MaxMind to unblock your host.  Note that automatic updates will
 
 = I've activated the plugin but the menus don't show up and nothing happens? =
 
-WP Statistics requires PHP 5.3, if it has detected an older version of PHP installed it will active but it will display an error on your plugin list just below the WP Statistics entry to let you know.
+WP Statistics requires PHP 5.3, if it has detected an older version of PHP installed it will active cleanly in WordPress but disable all functionality, you will have to upgrade to PHP 5.3 or above for it to function.  WP Statistics will display an error on your plugin list just below the WP Statistics entry to let you know.
 
 If there is no error message there may be something else wrong, your first thing to try is disabling your other plugins as they can sometimes cause conflicts.
 
@@ -172,24 +172,17 @@ Services that use centralized databases, like Google Analytics, for spam and rob
 
 Since WP Statistics 8.0, PHP 5.3 or above has been required.  If you are using an older version of PHP it cannot understand the new syntax included in WP Statistics 8.0 and generates a parse error. 
 
-You have two choices:
-
-1. Upgrade your PHP to 5.3 or above (recommended)
-2. Downgrade WP Statistics to 7.4
-
 Your hosting provider should have a newer version of PHP available, sometimes you must activate it through your hosting control panel.
 
 Since the last release of PHP 5.2 is over 3 years ago (Jan 2011) and is no longer supported or receiving security fixes, if your provider does not support a newer version you should probably be moving hosting providers.
 
-Having said that if you cannot move to PHP 5.3 or above you can still use WP Statistics 7.4, which you can download (here)[https://downloads.wordpress.org/plugin/wp-statistics.7.4.zip] and install manually through the WordPress plugin installer.
-
 If you have done an upgrade and you can no longer access your site due to the parse error you will have to manually delete the wp-statistics directory from your wordpress/wp-content/plugins directory, either through your hosting providers control panel or FTP.
+
+Do not use older versions of WP Statistics as they have know security issues and will leave your site vulnerable to attack.
 
 = I've decided to stay with WP Statistics 7.4 even though its a bad idea but now WordPress continuously reports there are updates available, how can I stop that? =
 
-If you are staying on WP Statistics 7.4 WordPress will, through the Dashboard and Admin bar, let you know that a newer version is available.  However that can be annoying, there are some plugins in the WordPress directory to help though.
-
-(Disable Updates Manager)[https://wordpress.org/plugins/stops-core-theme-and-plugin-updates/] is one I found doing a quick search and lets you disable individual plugins from the update process.
+Don't, upgrade immediately to the latest version of WP Statistics.
 
 = Something has gone horribly wrong and my site no longer loads, how can I disable the plugin without access to the admin area? =
 
@@ -211,15 +204,31 @@ You can manually disable plugins in WordPress by simply renaming the folder they
 = 8.5 =
 This is a security update release, please update as soon as possible.  In addition to the security fixes there are several new features, see the change log for details.
 
-= 8.3.1 =
-This is a security update release, please update as soon as possible.
-
 = 8.0 =
 PHP 5.3 is now required for WP Statistics!  DO NOT UPGRADE TO 8.0 IF YOU ARE RUNNING AN OLDER VERSION!
 BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure of the database.
 Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.6.3 =
+* Fixed: Really fix included countries code this time.
+* Fixed: Typo in excluded hosts code.
+
+= 8.6.2 =
+* Fixed: New included countries code incorrectly identified all countries as excluded.
+
+= 8.6.1 =
+* Added: Code to perform additional clean up of uncommon user agents.
+* Fixed: Spurious break statement in GeoIP exclusion code which caused a fatal error in certian cases.
+
+= 8.6 =
+* Added: Option to remove URI parameters from page tracking.
+* Added: GeoIP exclusion options.
+* Added: Host name exclusion options.
+* Fixed: Map dashboard widget fails when Google is selected as map provider.
+* Fixed: Changing the statistical report schedule would not actually change the schedule unless you disabled and then enabled the statistical reports feature.
+* Updated: French language.
+
 = 8.5.1 =
 * Fixed: Typo in last search page causing fatal error in PHP.
 
