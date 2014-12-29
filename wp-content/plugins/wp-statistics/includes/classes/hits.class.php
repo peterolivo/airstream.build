@@ -12,18 +12,19 @@
 		public $result = null;
 
 		protected $location = "000";
+		protected $exclusion_match = FALSE;
+		protected $exclusion_reason = '';
 
-		private $exclusion_match = FALSE;
-		private $exclusion_reason = '';
 		private $exclusion_record = FALSE;
 		private $timestamp;
 		private $second;
+		private $current_page_id;
 	
 		// Construction function.
 		public function __construct() {
 
 			global $wp_version;
-
+					
 			// Call the parent constructor (WP_Statistics::__construct)
 			parent::__construct();
 			
@@ -46,14 +47,15 @@
 			// The follow exclusion checks are done during the class construction so we don't have to execute them twice if we're tracking visits and visitors.
 			//
 			// Order of exclusion checks is:
-			//		1 - robots
+			//		1 - Robots
 			// 		2 - IP/Subnets
 			//		3 - Self Referrals & login page
 			//		4 - User roles
-			//		5 - GeoIP rules
-			//		6 - Host name list
+			//		5 - Host name list
 			//
-			
+			// The GoeIP exclusions will be processed in the GeoIP hits class constructor.
+			//
+
 			// Get the upload directory from WordPRess.
 			$upload_dir = wp_upload_dir();
 			 
@@ -171,58 +173,38 @@
 							}
 						}
 
-						// Check to see if we are excluded by the GeoIP rules.
+						// Check to see if we are excluded by the host name.
 						if( !$this->exclusion_match ) {
-							// Grab the excluded/included countries lists, force the country codes to be in upper case to match what the GeoIP code uses.
-							$excluded_countries = explode( "\n", strtoupper($this->get_option('excluded_countries') ) );
-							$included_countries_string = trim( strtoupper($this->get_option('included_countries') ) ); 
+							$excluded_host = explode( "\n", $this->get_option('excluded_hosts') );
 							
-							// We need to be really sure this isn't an empty string or explode will return an array with one entry instead of none.
-							if( $included_countries_string == '' ) { $included_countries = array(); } else { $included_countries = explode( "\n", $included_countries_string ); }
-							
-							// Check to see if the current location is in the excluded countries list.
-							if( in_array( $this->location, $excluded_countries ) ) {
-								$this->exclusion_match = TRUE;
-								$this->exclusion_reason = "geoip";
-							} // Check to see if the current location is not the included countries list.
-							else if( !in_array( $this->location, $included_countries ) && count( $included_countries ) > 0 ) {
-								$this->exclusion_match = TRUE;
-								$this->exclusion_reason = "geoip";
-							}
-
-							// Check to see if we are excluded by the host name.
-							if( !$this->exclusion_match ) {
-								$excluded_host = explode( "\n", $this->get_option('excluded_hosts') );
+							// If there's nothing in the excluded host list, don't do anything.
+							if( count( $excluded_host ) > 0 ) {
+								$transient_name = 'wps_excluded_hostname_to_ip_cache';
 								
-								// If there's nothing in the excluded host list, don't do anything.
-								if( count( $excluded_host ) > 0 ) {
-									$transient_name = 'wps_excluded_hostname_to_ip_cache';
+								// Get the transient with the hostname cache.
+								$hostname_cache = get_transient( $transient_name );
+								
+								// If the transient has expired (or has never been set), create one now.
+								if( $hostname_cache === false ) {
+									// Flush the failed cache variable.
+									$hostname_cache = array();
 									
-									// Get the transient with the hostname cache.
-									$hostname_cache = get_transient( $transient_name );
-									
-									// If the transient has expired (or has never been set), create one now.
-									if( $hostname_cache === false ) {
-										// Flush the failed cache variable.
-										$hostname_cache = array();
-										
-										// Loop through the list of hosts and look them up.
-										foreach( $excluded_host as $host ) {
-											if( strpos( $host, '.' ) > 0 ) {
-												// We add the extra period to the end of the host name to make sure we don't append the local dns suffix to the resolution cycle.
-												$hostname_cache[$host] = gethostbyname( $host . ".");
-											}
+									// Loop through the list of hosts and look them up.
+									foreach( $excluded_host as $host ) {
+										if( strpos( $host, '.' ) > 0 ) {
+											// We add the extra period to the end of the host name to make sure we don't append the local dns suffix to the resolution cycle.
+											$hostname_cache[$host] = gethostbyname( $host . ".");
 										}
-										
-										// Set the transient and store it for 1 hour.
-										set_transient( $transient_name, $hostname_cache, 360 );
 									}
 									
-									// Check if the current IP address matches one of the ones in the excluded hosts list.
-									if( in_array( $this->ip, $hostname_cache ) ) {
-										$this->exclusion_match = TRUE;
-										$this->exclusion_reason = "hostname";
-									}
+									// Set the transient and store it for 1 hour.
+									set_transient( $transient_name, $hostname_cache, 360 );
+								}
+								
+								// Check if the current IP address matches one of the ones in the excluded hosts list.
+								if( in_array( $this->ip, $hostname_cache ) ) {
+									$this->exclusion_match = TRUE;
+									$this->exclusion_reason = "hostname";
 								}
 							}
 						}
@@ -288,9 +270,20 @@
 		
 		// This function records unique visitors to the site.
 		public function Visitors() {
-	
+			global $wp_query;
+
+			// Get the pages or posts ID if it exists.
+			$this->current_page_id = $wp_query->get_queried_object_id();
+
+			if( $this->get_option( 'use_honeypot' ) && $this->get_option( 'honeypot_postid') > 0 && $this->get_option( 'honeypot_postid' ) == $this->current_page_id ) {
+				$this->exclusion_match = TRUE;
+				$this->exclusion_reason = "honeypot";
+			}
+			
 			// If we're a webcrawler or referral from ourselves or an excluded address don't record the visit.
-			if( !$this->exclusion_match ) {
+			// The exception here is if we've matched a honey page, we want to lookup the user and flag them
+			// as having been trapped in the honey pot for later exclusions.
+			if( $this->exclusion_reason == 'honeypot' || !$this->exclusion_match ) {
 
 				// Check to see if we already have an entry in the database.
 				if( $this->ip_hash != false ) {
@@ -300,50 +293,78 @@
 					$this->result = $this->db->get_row("SELECT * FROM {$this->tb_prefix}statistics_visitor WHERE `last_counter` = '{$this->Current_Date('Y-m-d')}' AND `ip` = '{$this->ip}' AND `agent` = '{$this->agent['browser']}' AND `platform` = '{$this->agent['platform']}' AND `version` = '{$this->agent['version']}'");
 				}
 				
+				// Check to see if this is a visit to the honey pot page, flag it when we create the new entry.
+				$honeypot = 0;
+				if( $this->exclusion_reason == 'honeypot' ) { $honeypot = 1; }
+					
 				// If we don't create a new one, otherwise update the old one.
 				if( !$this->result ) {
 
 					// If we've been told to store the entire user agent, do so.
 					if( $this->get_option('store_ua') == true ) { $ua = $_SERVER['HTTP_USER_AGENT']; } else { $ua = ''; }
-					
+
 					// Store the result.
 					// We'd normally use the WordPress insert function, but since we may run in to a race condition where another hit to the site has already created a new entry in the database
 					// for this IP address we want to do an "INSERT IGNORE" which WordPress doesn't support.
-					$sqlstring = $this->db->prepare( 'INSERT IGNORE INTO ' . $this->tb_prefix . 'statistics_visitor (last_counter, referred, agent, platform, version, ip , location, UAString) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s)', $this->Current_date('Y-m-d'), $this->get_Referred(), $this->agent['browser'], $this->agent['platform'], $this->agent['version'], $this->ip_hash ? $this->ip_hash : $this->ip, $this->location, $ua );
+					$sqlstring = $this->db->prepare( 'INSERT IGNORE INTO ' . $this->tb_prefix . 'statistics_visitor (last_counter, referred, agent, platform, version, ip, location, UAString, hits, honeypot) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, 1, %s )', $this->Current_date('Y-m-d'), $this->get_Referred(), $this->agent['browser'], $this->agent['platform'], $this->agent['version'], $this->ip_hash ? $this->ip_hash : $this->ip, $this->location, $ua, $honeypot );
 				
 					$this->db->query( $sqlstring );
 				}
-			} else {
-				if( $this->exclusion_record == TRUE ) {
-					$this->result = $this->db->query("UPDATE {$this->tb_prefix}statistics_exclusions SET `count` = `count` + 1 WHERE `date` = '{$this->Current_Date('Y-m-d')}' AND `reason` = '{$this->exclusion_reason}'");
-
-					if( !$this->result ) {
-						$this->db->insert(
-							$this->tb_prefix . "statistics_exclusions",
-							array(
-								'date'		=>	$this->Current_date('Y-m-d'),
-								'reason'	=>	$this->exclusion_reason,
-								'count'		=> 	1
-							)
-						);
+				else {
+					// Normally we've done all of our exclusion matching during the class creation, however for the robot threshold is calculated here to avoid another call the database.				
+					if( $this->get_option( 'robot_threshold' ) > 0 && $this->result->hits + 1 > $this->get_option( 'robot_threshold' ) ) {
+						$this->exclusion_match = TRUE;
+						$this->exclusion_reason = "robot_threshold";
+					}
+					else if( $this->result->honeypot == 1 ) {
+						$this->exclusion_match = TRUE;
+						$this->exclusion_reason = "honeypot";
+					}
+					else {
+					
+						$sqlstring = $this->db->prepare( 'UPDATE ' . $this->tb_prefix . 'statistics_visitor SET `hits` = `hits` + %d, `honeypot` = %d WHERE `ID` = %d', 1 - $honeypot, $honeypot, $this->result->ID );
+					
+						$this->db->query( $sqlstring );
 					}
 				}
+			} 
+			
+			if( $this->exclusion_match ) {
+				$this->RecordExclusion();
 			}
 		}
 
+		private function RecordExclusion() {
+			// If we're not storing exclusions, just return.
+			if( $this->exclusion_record != TRUE ) { return; }
+			$this->result = $this->db->query("UPDATE {$this->tb_prefix}statistics_exclusions SET `count` = `count` + 1 WHERE `date` = '{$this->Current_Date('Y-m-d')}' AND `reason` = '{$this->exclusion_reason}'");
+
+			if( !$this->result ) {
+				$this->db->insert(
+					$this->tb_prefix . "statistics_exclusions",
+					array(
+						'date'		=>	$this->Current_date('Y-m-d'),
+						'reason'	=>	$this->exclusion_reason,
+						'count'		=> 	1
+					)
+				);
+			}
+		}
+		
 		// This function records page hits.
 		public function Pages() {
-	
+			global $wp_query;
+
 			// If we're a webcrawler or referral from ourselves or an excluded address don't record the page hit.
 			if( !$this->exclusion_match ) {
 
 				// Don't track anything but actual pages and posts, unless we've been told to.
 				if( $this->get_option('track_all_pages') || is_page() || is_single() || is_front_page() ) {
-					global $wp_query;
-					
-					// Many of the URI's we hit will be pages or posts, get their ID if it exists.
-					$current_page_id = $wp_query->get_queried_object_id();
-
+					// Get the pages or posts ID if it exists and we haven't set it in the visitors code.
+					if( !$this->current_page_id ) {
+						$this->current_page_id = $wp_query->get_queried_object_id();
+					}
+	
 					// Get the current page URI.
 					$page_uri = wp_statistics_get_uri();
 					
@@ -352,6 +373,9 @@
 						if( $temp !== false ) { $page_uri = $temp[0]; }
 					}
 
+					// Limit the URI length to 255 characters, otherwise we may overrun the SQL field size.
+					$page_uri = substr( $page_uri, 0, 255);
+					
 					// If we have already been to this page today (a likely scenario), just update the count on the record.
 					$this->result = $this->db->query("UPDATE {$this->tb_prefix}statistics_pages SET `count` = `count` + 1 WHERE `date` = '{$this->Current_Date('Y-m-d')}' AND `uri` = '{$page_uri}'");
 
@@ -366,7 +390,7 @@
 								'uri'		=>	$page_uri,
 								'date'		=>	$this->Current_date('Y-m-d'),
 								'count'		=>	1,
-								'id'		=>	$current_page_id
+								'id'		=>	$this->current_page_id
 								)
 							);
 					}

@@ -4,7 +4,7 @@ Donate link: http://mostafa-soufi.ir/donate/
 Tags: statistics, stats, visit, visitors, chart, browser, blog, today, yesterday, week, month, year, total, post, page, sidebar, summary, feedburner, hits, pagerank, google, alexa, live visit
 Requires at least: 3.0
 Tested up to: 4.1
-Stable tag: 8.6.3
+Stable tag: 8.7.1
 License: GPL2
 
 Complete statistics for your WordPress site.
@@ -64,7 +64,8 @@ And a few things to double-check:
 * Are you getting a blank or incomplete page displayed in your browser?  Did you view the source for the page and check for any fatal errors?
 * Have you checked your PHP and web server error logs?
 
-Still not having any luck?  Open a new thread on one of the support forums and we'll respond as soon as possible.
+Still not having any luck? Open a new thread on one of the support forums and we'll respond as soon as possible.
+
 * [English Support Forum](http://wordpress.org/support/plugin/wp-statistics)
 * [Persian Support Forum](http://forum.wp-parsi.com/forum/17-%D9%85%D8%B4%DA%A9%D9%84%D8%A7%D8%AA-%D8%AF%DB%8C%DA%AF%D8%B1/)
 
@@ -201,6 +202,9 @@ You can manually disable plugins in WordPress by simply renaming the folder they
 10. View latest search engine referrers Statistics page.
 
 == Upgrade Notice ==
+= 8.7 =
+BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure of the database.
+
 = 8.5 =
 This is a security update release, please update as soon as possible.  In addition to the security fixes there are several new features, see the change log for details.
 
@@ -210,6 +214,22 @@ BACKUP YOUR DATABASE BEFORE INSTALLING!  This release alters the table structure
 Support for old format substitution codes in the statistics reports has been removed, the upgrade now converts them to short codes but you should verify the report content after upgrading.
 
 == Changelog ==
+= 8.7.1 =
+* Fixed: Variable scope for the exclusion match/reason updated to protected from private to allow the GeoIP code to set them.  This could cause various issues including failed uploades depending on the error reporting level set for PHP.
+
+= 8.7 =
+* Added: Charts with multiple lines now include the data set name in the tooltip.
+* Added: Honey pot option to detect crawlers.
+* Added: Robot threshold option.
+* Added: Hit count for visitors is now recorded and displayed.
+* Added: Top Visitors today widget and page.
+* Fixed: GeoIP exclusion logic didn't work as the location information was not set before it was applied, moved it to the appropriate location.
+* Fixed: Incorrect setting names for country include/excludes as well as hosts.
+* Fixed: Page URI length could exceed the database storage limit and cause duplicate entry warnings, URI is now truncated before being stored.
+* Updated: Polish and Farsi translations.
+* Updated: User agent parser to V0.3.2.
+* Updated: GeoIP library to v2.1.1.
+
 = 8.6.3 =
 * Fixed: Really fix included countries code this time.
 * Fixed: Typo in excluded hosts code.

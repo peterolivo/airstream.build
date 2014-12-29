@@ -25,6 +25,7 @@
 	include_once( dirname( __FILE__ ) . "/widgets/referring.php");
 	include_once( dirname( __FILE__ ) . "/widgets/search.php");
 	include_once( dirname( __FILE__ ) . "/widgets/summary.php");
+	include_once( dirname( __FILE__ ) . "/widgets/top.visitors.php" );
 	include_once( dirname( __FILE__ ) . "/widgets/words.php");
 
 	$search_engines = wp_statistics_searchengine_list();
@@ -74,6 +75,8 @@
 			<?php wp_statistics_display_column_b(5, $ISOCountryCode, $search_engines); ?>
 			
 			<?php wp_statistics_display_column_b(6, $ISOCountryCode, $search_engines); ?>
+			
+			<?php wp_statistics_display_column_b(7, $ISOCountryCode, $search_engines); ?>
 			
 			</div>
 		</div>
@@ -161,6 +164,11 @@
 			case 6:
 			case 'recent':
 				wp_statistics_generate_recent_postbox($ISOCountryCode, $search_engines);
+			
+				break;
+			case 7:
+			case 'top.visitors':
+				wp_statistics_generate_top_visitors_postbox($ISOCountryCode, $search_engines);
 			
 				break;
 			default:
