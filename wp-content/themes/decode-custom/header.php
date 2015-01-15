@@ -50,7 +50,7 @@
 	
 	<?php tha_header_before(); ?>
 	<?php if ( get_theme_mod( 'constant_sidebar', 'closing' ) == 'constant' && get_theme_mod( 'show_sidebar', true ) == true ) { echo '<div class="site-scroll">'; } ?>
-	<header id="masthead" class="site-header" role="banner" style="background: #141010 url(http://res.cloudinary.com/hpuomxzff/image/upload/c_crop,e_grayscale,g_north,h_220,w_640,x_0,y_60/v1413252533/header_smopk4.png) center no-repeat;">
+	<header id="masthead" class="site-header" role="banner" style="background: #141010 url(http://res.cloudinary.com/hpuomxzff/image/upload/c_crop,co_rgb:000,dn_300,e_grayscale,g_north,h_220,o_60,w_640,x_0,y_60/v1413252533/header_smopk4.png) center no-repeat;">
 		<?php tha_header_top(); ?>
 		
 		<div class="site-branding" style="color: white; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">
